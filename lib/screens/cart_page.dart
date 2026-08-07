@@ -149,7 +149,7 @@ class _CartPageState extends State<CartPage> {
                 ),
 
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  
                   decoration: const BoxDecoration(
                     border: Border(
                       top: BorderSide(color: Colors.grey),

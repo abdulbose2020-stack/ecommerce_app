@@ -25,20 +25,20 @@ final List<Product> products = [
     image: "assets/images/gamepad.png",
   ),
 
-  Product(
-    id: 4,
-    title: "Google Pixel 11 Pro",
-    description: "Google AI-powered smartphone.",
-    price: 999,
-    image: "assets/images/pixel 11pro.webp",
-  ),
 
   Product(
-    id: 5,
+    id: 4,
     title: "MackBook Air",
     description: "A lightweight, powerful laptop designed for work, study, and entertainment.",
     price: 980,
     image: "assets/images/MacBook_Air_M4.jpg",
+  ),
+  Product(
+    id: 5,
+    title: "Google Pixel 11 Pro",
+    description: "Google AI-powered smartphone.",
+    price: 999,
+    image: "assets/images/pixel 11pro.webp",
   ),
 
   Product(

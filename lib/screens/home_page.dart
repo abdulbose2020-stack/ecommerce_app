@@ -127,9 +127,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             const Text(
-              'Welcome to My Store 🛒',
+              'Welcome to MBA Gadgets Store 🛒',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 23,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -151,32 +151,31 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-
-            const SizedBox(height: 20),
+    const SizedBox(height: 20),
             const Align(
-  alignment: Alignment.centerLeft,
-  child: Text(
-    'Categories',
-    style: TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-    ),
-  ),
-),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          'Categories',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
 
-const SizedBox(height: 12),
+    const SizedBox(height: 12),
 
 SingleChildScrollView(
   scrollDirection: Axis.horizontal,
   child: Row(
     children: [
-      categoryItem('Electronics'),
-      categoryItem('Fashion'),
-      categoryItem('Shoes'),
-      categoryItem('Watches'),
-    ],
+      categoryItem('Electronics', const Color(0xFF2563EB)),
+      categoryItem('Fashion', const Color(0xFFEC4899)),
+      categoryItem('Shoes', const Color(0xFFF97316)),
+      categoryItem('Watches', const Color(0xFF14B8A6)),
+      ],
+    ),
   ),
-),
 
 const SizedBox(height: 20),
 
@@ -205,10 +204,12 @@ Expanded(
           );
         },
         child: Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
+              elevation: 8,
+              shadowColor: Colors.black12,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+        ),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -217,15 +218,21 @@ Expanded(
                 Expanded(
                   child: Stack(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          product.image,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.contain,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                      ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.asset(
+                              product.image,
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                       ),
 
                       Positioned(
                         top: 5,
@@ -268,27 +275,46 @@ Expanded(
 
                 const SizedBox(height: 5),
 
-                Text(
-                  '\$${product.price}',
-                  style: const TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+                Container(
+  padding: const EdgeInsets.symmetric(
+    horizontal: 10,
+    vertical: 5,
+  ),
+  decoration: BoxDecoration(
+    color: Colors.green.shade50,
+    borderRadius: BorderRadius.circular(20),
+  ),
+  child: Text(
+    '\$${product.price}',
+    style: const TextStyle(
+      color: Colors.green,
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    ),
+  ),
+),
 
                 const SizedBox(height: 8),
 
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      addToCart(product);
-                    },
-                    child: const Text(
-                      'Add to Cart',
-                    ),
-                  ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 48, 8, 117),
+    foregroundColor: Colors.white,
+    minimumSize: const Size.fromHeight(45),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+  onPressed: () {
+    addToCart(product);
+  },
+  child: const Text(
+    'Add to Cart',
+  ),
+),
+                  
                 ),
               ],
             ),
@@ -303,7 +329,7 @@ Expanded(
       ),
     );
   }
-  Widget categoryItem(String title) {
+  Widget categoryItem(String title, Color color) {
   return Container(
     margin: const EdgeInsets.only(right: 12),
     padding: const EdgeInsets.symmetric(
@@ -311,7 +337,7 @@ Expanded(
       vertical: 12,
     ),
     decoration: BoxDecoration(
-      color: Colors.blue,
+      color: color,
       borderRadius: BorderRadius.circular(12),
     ),
     child: Text(
@@ -319,6 +345,7 @@ Expanded(
       style: const TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.bold,
+        fontSize: 16,
       ),
     ),
   );

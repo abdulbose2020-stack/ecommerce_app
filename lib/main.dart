@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app/screens/main_navigation.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const EcommerceApp());
@@ -13,9 +14,7 @@ class EcommerceApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Commerce App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppTheme.lightTheme,
       home: const MainNavigation(),
     );
   }
