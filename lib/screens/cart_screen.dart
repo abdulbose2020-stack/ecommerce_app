@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
+import '../models/cart_item.dart';
+import 'cart_page.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
+  final List<CartItem> cartItems;
+
+  const CartScreen({
+    super.key,
+    required this.cartItems,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Cart'),
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: Text(
-          '🛒 Your cart is empty',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
+    return CartPage(cartItems: cartItems);
   }
 }

@@ -41,7 +41,7 @@ class ProductDetailsPage extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(
-              '\$${product.price}',
+              '#${product.price}',
               style: const TextStyle(
                 color: Colors.green,
                 fontSize: 22,

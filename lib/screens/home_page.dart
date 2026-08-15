@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/product.dart';
 import '../data/products.dart';
 import '../models/cart_item.dart';
@@ -7,7 +6,19 @@ import 'cart_page.dart';
 import 'product_details_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final List<Product> favoriteProducts;
+  final Function(Product) onFavoriteChanged;
+  final Function(Product) onAddToCart;
+  final int cartCount;
+
+  const HomePage({
+    super.key,
+    required this.favoriteProducts,
+    required this.onFavoriteChanged,
+     required this.onAddToCart,
+     required this.cartCount
+  });
+
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,6 +33,7 @@ class _HomePageState extends State<HomePage> {
       TextEditingController();
 
   String searchText = '';
+  String selectedCategory = '';
 
   final List<CartItem> cartItems = [];
 
@@ -68,9 +80,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final filteredProducts = products.where((product) {
-      return product.title
+      final matchesSearch = product.title
           .toLowerCase()
           .contains(searchText.toLowerCase());
+
+    final matchesCategory = selectedCategory.isEmpty ||
+        product.category == selectedCategory;
+      return matchesSearch && matchesCategory;
     }).toList();
 
     return Scaffold(
@@ -94,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
 
-              if (cartCount > 0)
+              if (widget.cartCount > 0)
                 Positioned(
                   right: 6,
                   top: 6,
@@ -107,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: Center(
                       child: Text(
-                        '$cartCount',
+                        '${widget.cartCount}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -238,24 +254,18 @@ Expanded(
                         top: 5,
                         right: 5,
                         child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              if (favoriteIds.contains(product.id)) {
-                                favoriteIds.remove(product.id);
-                              } else {
-                                favoriteIds.add(product.id);
-                              }
-                            });
-                          },
-                          icon: Icon(
-                            favoriteIds.contains(product.id)
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: favoriteIds.contains(product.id)
-                                ? Colors.red
-                                : Colors.grey,
-                          ),
-                        ),
+                                  onPressed: () {
+                                      widget.onFavoriteChanged(product);
+                                    },
+                                  icon: Icon(
+                                      widget.favoriteProducts.contains(product)
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: widget.favoriteProducts.contains(product)
+                                        ? Colors.red
+                                        : Colors.grey,
+                                      ),
+                                    ),
                       ),
                     ],
                   ),
@@ -285,7 +295,7 @@ Expanded(
     borderRadius: BorderRadius.circular(20),
   ),
   child: Text(
-    '\$${product.price}',
+    '#${product.price}',
     style: const TextStyle(
       color: Colors.green,
       fontWeight: FontWeight.bold,
@@ -308,7 +318,7 @@ Expanded(
     ),
   ),
   onPressed: () {
-    addToCart(product);
+    widget.onAddToCart(product);
   },
   child: const Text(
     'Add to Cart',
@@ -329,23 +339,53 @@ Expanded(
       ),
     );
   }
-  Widget categoryItem(String title, Color color) {
-  return Container(
-    margin: const EdgeInsets.only(right: 12),
-    padding: const EdgeInsets.symmetric(
-      horizontal: 18,
-      vertical: 12,
-    ),
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Text(
-      title,
-      style: const TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
+ Widget categoryItem(String title, Color color) {
+  final bool isSelected = selectedCategory == title;
+
+  return GestureDetector(
+    onTap: () {
+      setState(() {
+        if (selectedCategory == title) {
+          selectedCategory = '';
+        } else {
+          selectedCategory = title;
+        }
+      });
+    },
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: isSelected ? color : color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color,
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isSelected)
+            const Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 18,
+            ),
+          if (isSelected) const SizedBox(width: 6),
+          Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Colors.white : color,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ],
       ),
     ),
   );

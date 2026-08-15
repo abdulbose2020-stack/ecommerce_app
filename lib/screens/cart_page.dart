@@ -85,7 +85,7 @@ class _CartPageState extends State<CartPage> {
                                     const SizedBox(height: 5),
 
                                     Text(
-                                      "\$${item.product.price}",
+                                      "\#${item.product.price}",
                                       style: const TextStyle(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold,
@@ -169,7 +169,7 @@ class _CartPageState extends State<CartPage> {
                             ),
                           ),
                           Text(
-                            "\$${totalPrice.toStringAsFixed(2)}",
+                            "#${totalPrice.toStringAsFixed(2)}",
                             style: const TextStyle(
                               fontSize: 22,
                               color: Colors.green,
