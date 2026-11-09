@@ -1,36 +1,27 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/favorites_provider.dart';
 
-class FavoritesPage extends StatelessWidget {
-  final List<Product> favoriteProducts;
-
-  const FavoritesPage({
-    super.key,
-    required this.favoriteProducts,
-  });
+class FavoritesPage extends ConsumerWidget {
+  const FavoritesPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favoriteProducts = ref.watch(favoritesProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favorites'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Favorites'), centerTitle: true),
       body: favoriteProducts.isEmpty
           ? const Center(
               child: Text(
                 '❤️ No favorite products yet',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             )
           : GridView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: favoriteProducts.length,
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
@@ -59,9 +50,7 @@ class FavoritesPage extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
                         Text(
                           product.title,
                           maxLines: 1,
@@ -71,9 +60,7 @@ class FavoritesPage extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-
                         const SizedBox(height: 5),
-
                         Text(
                           '#${product.price}',
                           style: const TextStyle(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import 'home_page.dart';
 import 'favorites_page.dart';
@@ -18,18 +17,6 @@ class MainNavigation extends ConsumerStatefulWidget {
 class _MainNavigationState extends ConsumerState<MainNavigation> {
   int currentIndex = 0;
 
-  final List<Product> favoriteProducts = [];
-
-  void toggleFavorite(Product product) {
-    setState(() {
-      if (favoriteProducts.contains(product)) {
-        favoriteProducts.remove(product);
-      } else {
-        favoriteProducts.add(product);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final cartCount = ref.watch(cartItemCountProvider);
@@ -38,13 +25,8 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       body: IndexedStack(
         index: currentIndex,
         children: [
-          HomePage(
-            favoriteProducts: favoriteProducts,
-            onFavoriteChanged: toggleFavorite,
-          ),
-          FavoritesPage(
-            favoriteProducts: favoriteProducts,
-          ),
+          const HomePage(),
+          const FavoritesPage(),
           const CartScreen(),
           const ProfilePage(),
         ],
