@@ -1,37 +1,20 @@
 import 'package:flutter/material.dart';
-import '../models/cart_item.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/cart_provider.dart';
 
-class CheckoutPage extends StatefulWidget {
-  final List<CartItem> cartItems;
-
-  const CheckoutPage({
-    super.key,
-    required this.cartItems,
-  });
+class CheckoutPage extends ConsumerStatefulWidget {
+  const CheckoutPage({super.key});
 
   @override
-  State<CheckoutPage> createState() => _CheckoutPageState();
+  ConsumerState<CheckoutPage> createState() => _CheckoutPageState();
 }
 
-class _CheckoutPageState extends State<CheckoutPage> {
-  final TextEditingController nameController =
-      TextEditingController();
+class _CheckoutPageState extends ConsumerState<CheckoutPage> {
+  final TextEditingController nameController = TextEditingController();
 
-  final TextEditingController phoneController =
-      TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
-  final TextEditingController addressController =
-      TextEditingController();
-
-  double get totalPrice {
-    double total = 0;
-
-    for (var item in widget.cartItems) {
-      total += item.totalPrice;
-    }
-
-    return total;
-  }
+  final TextEditingController addressController = TextEditingController();
 
   @override
   void dispose() {
@@ -42,37 +25,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   void placeOrder() {
-    if (nameController.text.isEmpty ||
-        phoneController.text.isEmpty ||
-        addressController.text.isEmpty) {
+    if (nameController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty ||
+        addressController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please fill in all fields',
-          ),
-        ),
+        const SnackBar(content: Text('Please fill in all fields')),
       );
-
       return;
     }
 
-    setState(() {
-      widget.cartItems.clear();
-    });
+    ref.read(cartProvider.notifier).clearCart();
 
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text("Order Successful"),
-          content: const Text(
-            "Thank you for your purchase!",
-          ),
+          content: const Text("Thank you for your purchase!"),
           actions: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-
+                Navigator.pop(dialogContext);
                 Navigator.pop(context);
               },
               child: const Text("OK"),
@@ -85,11 +58,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final totalPrice = ref.watch(cartTotalPriceProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Checkout"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Checkout"), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -101,19 +73,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-
             const SizedBox(height: 15),
-
             TextField(
               controller: phoneController,
+              keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 labelText: "Phone Number",
                 border: OutlineInputBorder(),
               ),
             ),
-
             const SizedBox(height: 15),
-
             TextField(
               controller: addressController,
               maxLines: 3,
@@ -122,21 +91,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-
             const SizedBox(height: 25),
-
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
                   "Total",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-
                 Text(
                   "#${totalPrice.toStringAsFixed(2)}",
                   style: const TextStyle(
@@ -147,17 +109,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
               ],
             ),
-
             const Spacer(),
-
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
                 onPressed: placeOrder,
-                child: const Text(
-                  "Place Order",
-                ),
+                child: const Text("Place Order"),
               ),
             ),
           ],

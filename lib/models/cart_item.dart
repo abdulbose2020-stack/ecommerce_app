@@ -2,7 +2,7 @@ import 'product.dart';
 
 class CartItem {
   final Product product;
-  int quantity;
+  final int quantity;
 
   CartItem({
     required this.product,

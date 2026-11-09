@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
-import '../models/cart_item.dart';
-
+import '../providers/cart_provider.dart';
 import 'home_page.dart';
 import 'favorites_page.dart';
 import 'cart_screen.dart';
 import 'profile_page.dart';
 
-class MainNavigation extends StatefulWidget {
+class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
 
   @override
-  State<MainNavigation> createState() => _MainNavigationState();
+  ConsumerState<MainNavigation> createState() =>
+      _MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
+class _MainNavigationState extends ConsumerState<MainNavigation> {
   int currentIndex = 0;
 
   final List<Product> favoriteProducts = [];
-  final List<CartItem> cartItems = [];
 
   void toggleFavorite(Product product) {
     setState(() {
@@ -30,27 +30,10 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
-  void addToCart(Product product) {
-  setState(() {
-    final existingItem = cartItems.where(
-      (item) => item.product.id == product.id,
-    );
-
-    if (existingItem.isNotEmpty) {
-      existingItem.first.quantity++;
-    } else {
-      cartItems.add(
-        CartItem(
-          product: product,
-          quantity: 1,
-        ),
-      );
-    }
-  });
-}
-
   @override
   Widget build(BuildContext context) {
+    final cartCount = ref.watch(cartItemCountProvider);
+
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
@@ -58,22 +41,14 @@ class _MainNavigationState extends State<MainNavigation> {
           HomePage(
             favoriteProducts: favoriteProducts,
             onFavoriteChanged: toggleFavorite,
-            onAddToCart: addToCart,
-            cartCount: cartItems.length,
           ),
-
           FavoritesPage(
             favoriteProducts: favoriteProducts,
           ),
-
-          CartScreen(
-            cartItems: cartItems,
-          ),
-
+          const CartScreen(),
           const ProfilePage(),
         ],
       ),
-
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           boxShadow: [
@@ -90,36 +65,52 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           child: BottomNavigationBar(
             currentIndex: currentIndex,
-
             onTap: (index) {
               setState(() {
                 currentIndex = index;
               });
             },
-
             type: BottomNavigationBarType.fixed,
-
             selectedItemColor: Colors.blue,
             unselectedItemColor: Colors.grey,
-
             selectedLabelStyle: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
-
-            items: const [
-              BottomNavigationBarItem(
+            items: [
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.home_rounded),
                 label: 'Home',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.favorite_rounded),
                 label: 'Favorites',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart_rounded),
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.shopping_cart_rounded),
+                    if (cartCount > 0)
+                      Positioned(
+                        right: -9,
+                        top: -7,
+                        child: CircleAvatar(
+                          radius: 9,
+                          backgroundColor: Colors.red,
+                          child: Text(
+                            '$cartCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 label: 'Cart',
               ),
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.person_rounded),
                 label: 'Profile',
               ),

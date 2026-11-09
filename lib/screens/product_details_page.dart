@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
-class ProductDetailsPage extends StatelessWidget {
+import '../providers/cart_provider.dart';
+
+class ProductDetailsPage extends ConsumerWidget {
   final Product product;
 
   const ProductDetailsPage({
@@ -9,7 +12,7 @@ class ProductDetailsPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(product.title),
@@ -22,14 +25,12 @@ class ProductDetailsPage extends StatelessWidget {
           children: [
             Center(
               child: Image.asset(
-                  product.image,
-                  height: 250,
-                  fit: BoxFit.contain,
-                ),
+                product.image,
+                height: 250,
+                fit: BoxFit.contain,
+              ),
             ),
-
             const SizedBox(height: 20),
-
             Text(
               product.title,
               style: const TextStyle(
@@ -37,9 +38,7 @@ class ProductDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 10),
-
             Text(
               '#${product.price}',
               style: const TextStyle(
@@ -48,9 +47,7 @@ class ProductDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 20),
-
             const Text(
               'Description',
               style: TextStyle(
@@ -58,9 +55,7 @@ class ProductDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 10),
-
             Text(
               product.description,
               style: const TextStyle(
@@ -68,14 +63,14 @@ class ProductDetailsPage extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-
             const SizedBox(height: 30),
-
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {
+                  ref.read(cartProvider.notifier).addItem(product);
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Added to Cart'),

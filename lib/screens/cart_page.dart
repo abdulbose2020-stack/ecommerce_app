@@ -1,39 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/cart_provider.dart';
 import 'checkout_page.dart';
 
-import '../models/cart_item.dart';
-
-class CartPage extends StatefulWidget {
-  final List<CartItem> cartItems;
-
-  const CartPage({
-    super.key,
-    required this.cartItems,
-  });
+class CartPage extends ConsumerWidget {
+  const CartPage({super.key});
 
   @override
-  State<CartPage> createState() => _CartPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartItems = ref.watch(cartProvider);
+    final totalPrice = ref.watch(cartTotalPriceProvider);
+    final cartNotifier = ref.read(cartProvider.notifier);
 
-class _CartPageState extends State<CartPage> {
-  double get totalPrice {
-    double total = 0;
-
-    for (final item in widget.cartItems) {
-      total += item.totalPrice;
-    }
-
-    return total;
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Cart"),
         centerTitle: true,
       ),
-      body: widget.cartItems.isEmpty
+      body: cartItems.isEmpty
           ? const Center(
               child: Text(
                 "🛒 Your cart is empty",
@@ -47,9 +31,9 @@ class _CartPageState extends State<CartPage> {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: widget.cartItems.length,
+                    itemCount: cartItems.length,
                     itemBuilder: (context, index) {
-                      final item = widget.cartItems[index];
+                      final item = cartItems[index];
 
                       return Card(
                         margin: const EdgeInsets.symmetric(
@@ -61,14 +45,12 @@ class _CartPageState extends State<CartPage> {
                           child: Row(
                             children: [
                               Image.asset(
-                               item.product.image,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.contain,
-                           ),
-
+                                item.product.image,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.contain,
+                              ),
                               const SizedBox(width: 12),
-
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment:
@@ -81,32 +63,27 @@ class _CartPageState extends State<CartPage> {
                                         fontSize: 16,
                                       ),
                                     ),
-
                                     const SizedBox(height: 5),
-
                                     Text(
-                                      "\#${item.product.price}",
+                                      "#${item.product.price}",
                                       style: const TextStyle(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-
                                     const SizedBox(height: 10),
-
                                     Row(
                                       children: [
                                         IconButton(
                                           onPressed: () {
-                                            setState(() {
-                                              if (item.quantity > 1) {
-                                                item.quantity--;
-                                              }
-                                            });
+                                            cartNotifier.decreaseQuantity(
+                                              item.product.id,
+                                            );
                                           },
-                                          icon: const Icon(Icons.remove_circle),
+                                          icon: const Icon(
+                                            Icons.remove_circle,
+                                          ),
                                         ),
-
                                         Text(
                                           "${item.quantity}",
                                           style: const TextStyle(
@@ -114,26 +91,26 @@ class _CartPageState extends State<CartPage> {
                                             fontSize: 18,
                                           ),
                                         ),
-
                                         IconButton(
                                           onPressed: () {
-                                            setState(() {
-                                              item.quantity++;
-                                            });
+                                            cartNotifier.increaseQuantity(
+                                              item.product.id,
+                                            );
                                           },
-                                          icon: const Icon(Icons.add_circle),
+                                          icon: const Icon(
+                                            Icons.add_circle,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
-
                               IconButton(
                                 onPressed: () {
-                                  setState(() {
-                                    widget.cartItems.removeAt(index);
-                                  });
+                                  cartNotifier.removeItem(
+                                    item.product.id,
+                                  );
                                 },
                                 icon: const Icon(
                                   Icons.delete,
@@ -147,14 +124,13 @@ class _CartPageState extends State<CartPage> {
                     },
                   ),
                 ),
-
                 Container(
-                  
                   decoration: const BoxDecoration(
                     border: Border(
                       top: BorderSide(color: Colors.grey),
                     ),
                   ),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       Row(
@@ -178,9 +154,7 @@ class _CartPageState extends State<CartPage> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 15),
-
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -188,13 +162,9 @@ class _CartPageState extends State<CartPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => CheckoutPage(
-                                  cartItems: widget.cartItems,
-                                ),
+                                builder: (_) => const CheckoutPage(),
                               ),
-                            ).then((_) {
-                              setState(() {});
-                            });
+                            );
                           },
                           child: const Text(
                             "Proceed to Checkout",
